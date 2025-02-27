@@ -1,5 +1,6 @@
 import 'package:flowkey_mobile/viewmodels/auth_viewmodel.dart';
 import 'package:flowkey_mobile/viewmodels/keys_viewmodel.dart';
+import 'package:flowkey_mobile/viewmodels/loans_viewmodel.dart';
 import 'package:flowkey_mobile/views/home_screen.dart';
 import 'package:flowkey_mobile/views/login_screen.dart';
 import 'package:flowkey_mobile/views/role_selection_screen.dart';
@@ -12,6 +13,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => KeysViewModel()),
+        ChangeNotifierProvider(create: (_) => LoansViewModel()), // ✅ Novo ViewModel
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
