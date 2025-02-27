@@ -3,13 +3,18 @@ import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _passwordController = TextEditingController();
+
+  final TextEditingController _emailController = TextEditingController(text: 'joao@example.com');
+  final TextEditingController _passwordController = TextEditingController(text: '123456');
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 bool success = await authViewModel.login(
                   _emailController.text,
                   _passwordController.text,
+                  context
                 );
 
                 if (success) {

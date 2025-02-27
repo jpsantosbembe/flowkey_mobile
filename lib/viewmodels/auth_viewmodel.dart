@@ -9,12 +9,14 @@ class AuthViewModel extends ChangeNotifier {
   final ApiService _apiService = ApiService();
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   UserModel? _user;
+  String? _selectedRole;
   bool _isLoading = false;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
+  String? get selectedRole => _selectedRole;
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String email, String password, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
@@ -22,18 +24,37 @@ class AuthViewModel extends ChangeNotifier {
 
     if (data != null && data.containsKey('token')) {
       await _storage.write(key: 'token', value: data['token']);
-
       _user = UserModel.fromJson(data['user']);
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('user', jsonEncode(data['user']));
 
       _isLoading = false;
       notifyListeners();
+
+      if (!context.mounted) return false; // ✅ Verifica se a tela ainda está ativa
+
+      // **Se houver mais de um papel, vai para a tela de seleção**
+      if (_user!.roles.length > 1) {
+        Navigator.pushReplacementNamed(context, '/role_selection');
+      } else {
+        // **Se houver um único papel, já define e vai para Home**
+        _selectedRole = _user!.roles.first;
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+
       return true;
     }
 
     _isLoading = false;
     notifyListeners();
+
+    if (!context.mounted) return false; // ✅ Verifica antes de exibir o alerta
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Falha no login! Verifique suas credenciais.')),
+    );
+
     return false;
   }
 
@@ -42,16 +63,17 @@ class AuthViewModel extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');
     _user = null;
+    _selectedRole = null;
     notifyListeners();
   }
 
-  Future<void> loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userData = prefs.getString('user');
-
-    if (userData != null) {
-      _user = UserModel.fromJson(jsonDecode(userData));
-      notifyListeners();
-    }
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'token');
   }
+
+  void setRole(String role) {
+    _selectedRole = role;
+    notifyListeners();
+  }
+
 }

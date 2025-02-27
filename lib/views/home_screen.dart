@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
+import '../widgets/admin_section.dart';
+import '../widgets/discente_section.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<AuthViewModel>(context, listen: false).loadUserData();
-  }
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
-    final user = authViewModel.user;
+    final role = authViewModel.selectedRole ?? "Sem Papel";
+
+    Widget getRoleScreen() {
+      switch (role.toLowerCase()) {
+        case 'admin':
+          return AdminSection();
+        case 'guarda':
+          return GuardaScreen();
+        case 'discente':
+          return DiscenteSection();
+        case 'coordenador':
+          return CoordenadorScreen();
+        default:
+          return Center(child: Text('Papel não reconhecido!'));
+      }
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
+      appBar: role.toLowerCase() == 'admin' ? null : AppBar(
+        title: Text('Home - $role'),
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -32,25 +40,34 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: user == null
-            ? CircularProgressIndicator()
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Bem-vindo, ${user.name}!', style: TextStyle(fontSize: 22)),
-            Text('Email: ${user.email}'),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await authViewModel.logout();
-                Navigator.pushReplacementNamed(context, '/login');
-              },
-              child: Text('Sair'),
-            ),
-          ],
-        ),
-      ),
+      body: getRoleScreen(),
     );
+  }
+}
+
+class GuardaScreen extends StatelessWidget {
+  const GuardaScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Tela de Guarda', style: TextStyle(fontSize: 22)));
+  }
+}
+
+class DiscenteScreen extends StatelessWidget {
+  const DiscenteScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Tela de Discente', style: TextStyle(fontSize: 22)));
+  }
+}
+
+class CoordenadorScreen extends StatelessWidget {
+  const CoordenadorScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Tela de Coordenador', style: TextStyle(fontSize: 22)));
   }
 }
