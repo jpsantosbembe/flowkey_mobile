@@ -9,7 +9,7 @@ class AuthProvider with ChangeNotifier {
   Future<bool> login(String email, String password) async {
     try {
       Response response = await _dio.post(
-        'http://localhost:8000/api/login',
+        'http://172.16.0.100:8000/api/login',
         data: {
           'email': email,
           'password': password,
@@ -23,5 +23,10 @@ class AuthProvider with ChangeNotifier {
       print('Erro ao logar: $e');
     }
     return false;
+  }
+
+  Future<void> logout() async {
+    await _storage.delete(key: 'token');
+    notifyListeners();
   }
 }
