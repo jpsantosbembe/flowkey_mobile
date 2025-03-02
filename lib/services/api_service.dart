@@ -122,7 +122,7 @@ class ApiService {
 
   Future<bool> revokeAccess(int userId, int keyId, String token) async {
     try {
-      String endpoint = 'http://localhost:8000/api/key/revoke'; // 🔥 Certifique-se de que a URL está correta
+      String endpoint = '$apiUrl/api/key/revoke'; // 🔥 Certifique-se de que a URL está correta
 
       Response response = await _dio.post(
         endpoint,
@@ -150,8 +150,25 @@ class ApiService {
     }
   }
 
+  Future<List<UserModel>> searchUsers(String query, String token) async {
+    try {
+      String endpoint = '$apiUrl/api/user/search?query=$query';
 
+      Response response = await _dio.get(
+        endpoint,
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
 
-
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => UserModel.fromJson(json)).toList();
+      }
+    } catch (e) {
+      print('Erro ao buscar usuários: $e');
+    }
+    return [];
+  }
 
 }

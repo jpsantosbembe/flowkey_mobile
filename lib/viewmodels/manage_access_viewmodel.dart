@@ -6,10 +6,14 @@ import 'auth_viewmodel.dart';
 class ManageAccessViewModel extends ChangeNotifier {
   final ApiService _apiService = ApiService();
   List<AuthorizationModel> _authorizations = [];
+  List<UserModel> _searchResults = [];
   bool _isLoading = false;
+  bool _isSearching = false;
 
   List<AuthorizationModel> get authorizations => _authorizations;
+  List<UserModel> get searchResults => _searchResults;
   bool get isLoading => _isLoading;
+  bool get isSearching => _isSearching;
 
   Future<void> fetchAuthorizations(AuthViewModel authViewModel, int keyId) async {
     if (authViewModel.user == null) return;
@@ -46,5 +50,20 @@ class ManageAccessViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> searchUsers(AuthViewModel authViewModel, String query) async {
+    if (authViewModel.user == null || query.isEmpty) {
+      _searchResults = [];
+      notifyListeners();
+      return;
+    }
+
+    _isSearching = true;
+    notifyListeners();
+
+    _searchResults = await _apiService.searchUsers(query, await authViewModel.getToken() ?? "");
+
+    _isSearching = false;
+    notifyListeners();
+  }
 
 }

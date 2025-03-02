@@ -38,12 +38,12 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
       ),
       child: Container(
         width: 500,
-        height: 400,
+        height: 500, // Adjusted to accommodate search results
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // **Título e botão de fechar**
+            // Title and close button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -61,14 +61,14 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
             ),
             SizedBox(height: 5),
 
-            // **Nome e descrição da chave**
+            // Key name and description
             Text(
               "${widget.keyModel.label} - ${widget.keyModel.description}",
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 15),
 
-            // **Campo de pesquisa**
+            // Search field
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -77,12 +77,44 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (value) {
-                // No futuro, chamaremos a função de busca aqui
+                manageAccessViewModel.searchUsers(authViewModel, value);
               },
             ),
             SizedBox(height: 10),
 
-            // **Lista de usuários autorizados dentro de um container rolável**
+            // Search results
+            manageAccessViewModel.isSearching
+                ? Center(child: CircularProgressIndicator())
+                : manageAccessViewModel.searchResults.isNotEmpty
+                ? Container(
+              height: 150, // Fixed height to avoid layout issues
+              child: ListView(
+                children: manageAccessViewModel.searchResults.map((user) {
+                  return ListTile(
+                    leading: Icon(Icons.person, color: Colors.blue),
+                    title: Text(user.name),
+                    subtitle: Text(user.email),
+                    trailing: IconButton(
+                      icon: Icon(Icons.add, color: Colors.green),
+                      onPressed: () async {
+                        // Logic to add authorization will be implemented later
+                        // Example placeholder:
+                        // await manageAccessViewModel.addAuthorization(
+                        //   authViewModel,
+                        //   user.id,
+                        //   widget.keyModel.id,
+                        // );
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+            )
+                : SizedBox.shrink(),
+
+            SizedBox(height: 10),
+
+            // List of authorized users
             Expanded(
               child: manageAccessViewModel.isLoading
                   ? Center(child: CircularProgressIndicator())
@@ -114,7 +146,7 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                               ),
                               TextButton(
                                 onPressed: () async {
-                                  Navigator.of(context).pop(); // Fecha o alerta
+                                  Navigator.of(context).pop(); // Close the alert
                                   await manageAccessViewModel.removeAuthorization(
                                     authViewModel,
                                     auth.user.id,
