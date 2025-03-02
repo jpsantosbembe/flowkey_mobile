@@ -8,6 +8,7 @@ class LoanModel {
   final String borrowedAt;
   final KeyModel key;
   final String givenByName;
+  final String borrowedByName; // 🔥 Novo campo
 
   LoanModel({
     required this.id,
@@ -17,6 +18,7 @@ class LoanModel {
     required this.borrowedAt,
     required this.key,
     required this.givenByName,
+    required this.borrowedByName,
   });
 
   factory LoanModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class LoanModel {
       borrowedAt: json['borrowed_at'],
       key: KeyModel.fromJson(json['key']),
       givenByName: json['given_by']['name'],
+      borrowedByName: json['borrowed_by']['name'],
     );
   }
 }

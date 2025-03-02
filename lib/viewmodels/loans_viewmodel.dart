@@ -11,7 +11,7 @@ class LoansViewModel extends ChangeNotifier {
   List<LoanModel> get loans => _loans;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchActiveLoans(AuthViewModel authViewModel) async {
+  Future<void> fetchActiveLoans(AuthViewModel authViewModel, {bool isCoordinator = false}) async {
     if (authViewModel.user == null) return;
 
     _isLoading = true;
@@ -20,9 +20,11 @@ class LoansViewModel extends ChangeNotifier {
     _loans = await _apiService.fetchActiveLoans(
       authViewModel.user!.id,
       await authViewModel.getToken() ?? "",
+      isCoordinator: isCoordinator,
     );
 
     _isLoading = false;
     notifyListeners();
   }
+
 }

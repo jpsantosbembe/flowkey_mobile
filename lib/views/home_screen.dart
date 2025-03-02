@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../widgets/admin_section.dart';
 import '../widgets/discente_section.dart';
+import '../widgets/coordenador_section.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,7 +22,7 @@ class HomeScreen extends StatelessWidget {
         case 'discente':
           return DiscenteSection();
         case 'coordenador':
-          return CoordenadorScreen();
+          return CoordenadorSection();
         default:
           return Center(child: Text('Papel não reconhecido!'));
       }
@@ -51,23 +52,5 @@ class GuardaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Tela de Guarda', style: TextStyle(fontSize: 22)));
-  }
-}
-
-class DiscenteScreen extends StatelessWidget {
-  const DiscenteScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Tela de Discente', style: TextStyle(fontSize: 22)));
-  }
-}
-
-class CoordenadorScreen extends StatelessWidget {
-  const CoordenadorScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Tela de Coordenador', style: TextStyle(fontSize: 22)));
   }
 }

@@ -5,11 +5,13 @@ import '../models/loan_model.dart';
 
 class ApiService {
   final Dio _dio = Dio();
+  
+  var apiUrl = 'http://172.16.0.100:8000';
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
       Response response = await _dio.post(
-        'http://192.168.15.76:8000/api/login',
+        '$apiUrl/api/login',
         data: {'email': email, 'password': password},
       );
 
@@ -22,10 +24,15 @@ class ApiService {
     return null;
   }
 
-  Future<List<KeyModel>> fetchUserKeys(int userId, String token) async {
+  Future<List<KeyModel>> fetchUserKeys(int userId, String token, {bool isCoordinator = false}) async {
     try {
+      // 🔥 Se for coordenador, busca na rota correta
+      String endpoint = isCoordinator
+          ? '$apiUrl/api/user/$userId/coordinator-keys'
+          : '$apiUrl/api/user/$userId/keys';
+
       Response response = await _dio.get(
-        'http://192.168.15.76:8000/api/user/$userId/keys',
+        endpoint,
         options: Options(headers: {
           'Authorization': 'Bearer $token',
         }),
@@ -33,7 +40,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
-        return data.map((json) => KeyModel.fromJson(json)).toList();
+        return data.map((json) => KeyModel.fromJson(json['key'] ?? json)).toList();
       }
     } catch (e) {
       print('Erro ao buscar chaves: $e');
@@ -41,12 +48,18 @@ class ApiService {
     return [];
   }
 
-  Future<List<LoanModel>> fetchActiveLoans(int userId, String token) async {
+
+  Future<List<LoanModel>> fetchActiveLoans(int userId, String token, {bool isCoordinator = false}) async {
     try {
+      // 🔥 Se for coordenador, busca na rota correta
+      String endpoint = isCoordinator
+          ? '$apiUrl/api/coordinator/$userId/loans/active'
+          : '$apiUrl/api/user/$userId/loans/active';
+
       Response response = await _dio.get(
-        'http://192.168.15.76:8000/api/user/$userId/loans/active',
+        endpoint,
         options: Options(headers: {
-          'Authorization': 'Bearer $token', // Envia o token de autenticação
+          'Authorization': 'Bearer $token',
         }),
       );
 
@@ -56,6 +69,31 @@ class ApiService {
       }
     } catch (e) {
       print('Erro ao buscar empréstimos ativos: $e');
+    }
+    return [];
+  }
+
+
+  Future<List<KeyModel>> fetchKeys(int userId, String token, {bool isCoordinator = false}) async {
+    try {
+      // 🔥 Se for coordenador, busca na rota correta
+      String endpoint = isCoordinator
+          ? '$apiUrl/api/user/$userId/coordinator-keys'
+          : '$apiUrl/api/user/$userId/keys';
+
+      Response response = await _dio.get(
+        endpoint,
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((json) => KeyModel.fromJson(json['key'] ?? json)).toList();
+      }
+    } catch (e) {
+      print('Erro ao buscar chaves: $e');
     }
     return [];
   }

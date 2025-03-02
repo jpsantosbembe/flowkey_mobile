@@ -11,7 +11,7 @@ class KeysViewModel extends ChangeNotifier {
   List<KeyModel> get keys => _keys;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchKeys(AuthViewModel authViewModel) async {
+  Future<void> fetchKeys(AuthViewModel authViewModel, {bool isCoordinator = false}) async {
     if (authViewModel.user == null) return;
 
     _isLoading = true;
@@ -20,9 +20,11 @@ class KeysViewModel extends ChangeNotifier {
     _keys = await _apiService.fetchUserKeys(
       authViewModel.user!.id,
       await authViewModel.getToken() ?? "",
+      isCoordinator: isCoordinator,
     );
 
     _isLoading = false;
     notifyListeners();
   }
+
 }
