@@ -87,7 +87,7 @@ class HomeScreen extends StatelessWidget {
   Color getRoleColor(String role) {
     switch (role.toLowerCase()) {
       case 'coordenador':
-        return Colors.blue[800]!;
+        return Colors.green[800]!;
       case 'discente':
         return Colors.purple[500]!;
       case 'guarda':

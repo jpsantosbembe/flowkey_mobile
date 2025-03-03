@@ -61,9 +61,9 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
             ),
             child: TabBar(
               controller: _tabController,
-              labelColor: Colors.blue[800],
+              labelColor: Colors.green[800],
               unselectedLabelColor: Colors.grey[600],
-              indicatorColor: Colors.blue[800],
+              indicatorColor: Colors.green[800],
               indicatorWeight: 3,
               tabs: [
                 Tab(
@@ -129,7 +129,7 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.blue[50]!],
+            colors: [Colors.white, Colors.green[50]!],
           ),
         ),
         child: Padding(
@@ -142,10 +142,10 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue[100],
+                      color: Colors.green[100],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.vpn_key, color: Colors.blue[800]),
+                    child: Icon(Icons.vpn_key, color: Colors.green[800]),
                   ),
                   SizedBox(width: 16),
                   Expanded(
@@ -157,7 +157,7 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue[800],
+                            color: Colors.green[800],
                           ),
                         ),
                         SizedBox(height: 4),
@@ -189,7 +189,7 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
                   ),
                   label: Text("Gerenciar Acessos"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[700],
+                    backgroundColor: Colors.green[700],
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
