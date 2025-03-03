@@ -91,7 +91,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
               ),
             ),
 
-            // Search container
             AnimatedContainer(
               duration: Duration(milliseconds: 300),
               height: _isSearchExpanded ? 210 : 80,
@@ -148,7 +147,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                     ],
                   ),
 
-                  // Search results
                   if (_isSearchExpanded)
                     Expanded(
                       child: manageAccessViewModel.isSearching
@@ -206,7 +204,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
               ),
             ),
 
-            // Title for authorized users list
             Padding(
               padding: EdgeInsets.fromLTRB(24, 16, 24, 8),
               child: Text(
@@ -219,7 +216,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
               ),
             ),
 
-            // List of authorized users
             Expanded(
               child: manageAccessViewModel.isLoading
                   ? Center(child: CircularProgressIndicator())

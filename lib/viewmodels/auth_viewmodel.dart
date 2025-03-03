@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
-// Nova classe para armazenar credenciais de login
 class SavedCredentials {
   final String email;
   final String password;
@@ -24,13 +23,11 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get selectedRole => _selectedRole;
 
-  // Método para salvar credenciais
   Future<void> saveCredentials(String email, String password) async {
     await _storage.write(key: 'saved_email', value: email);
     await _storage.write(key: 'saved_password', value: password);
   }
 
-  // Método para obter credenciais salvas
   Future<SavedCredentials?> getSavedCredentials() async {
     final email = await _storage.read(key: 'saved_email');
     final password = await _storage.read(key: 'saved_password');
@@ -42,7 +39,6 @@ class AuthViewModel extends ChangeNotifier {
     return null;
   }
 
-  // Método para limpar credenciais salvas
   Future<void> clearSavedCredentials() async {
     await _storage.delete(key: 'saved_email');
     await _storage.delete(key: 'saved_password');
@@ -64,13 +60,11 @@ class AuthViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      if (!context.mounted) return false; // ✅ Verifica se a tela ainda está ativa
+      if (!context.mounted) return false;
 
-      // **Se houver mais de um papel, vai para a tela de seleção**
       if (_user!.roles.length > 1) {
         Navigator.pushReplacementNamed(context, '/role_selection');
       } else {
-        // **Se houver um único papel, já define e vai para Home**
         _selectedRole = _user!.roles.first;
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -81,7 +75,7 @@ class AuthViewModel extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
 
-    if (!context.mounted) return false; // ✅ Verifica antes de exibir o alerta
+    if (!context.mounted) return false;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -101,9 +95,6 @@ class AuthViewModel extends ChangeNotifier {
     _user = null;
     _selectedRole = null;
     notifyListeners();
-
-    // Não limpa as credenciais salvas aqui, elas devem permanecer
-    // para que o usuário possa fazer login novamente com facilidade
   }
 
   Future<String?> getToken() async {
@@ -115,12 +106,10 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Verificar se o usuário está logado ao iniciar o aplicativo
   Future<bool> checkLoggedInUser() async {
     final token = await _storage.read(key: 'token');
 
     if (token != null) {
-      // Carregar os dados do usuário do SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final userData = prefs.getString('user');
 
@@ -128,7 +117,6 @@ class AuthViewModel extends ChangeNotifier {
         try {
           _user = UserModel.fromJson(jsonDecode(userData));
 
-          // Se o usuário tem apenas um papel, já o define
           if (_user!.roles.length == 1) {
             _selectedRole = _user!.roles.first;
           }
@@ -136,12 +124,11 @@ class AuthViewModel extends ChangeNotifier {
           notifyListeners();
           return true;
         } catch (e) {
-          // Se houver erro ao decodificar os dados, limpa tudo
           await logout();
         }
       }
     }
-
     return false;
   }
+
 }

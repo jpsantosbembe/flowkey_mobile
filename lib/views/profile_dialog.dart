@@ -28,7 +28,6 @@ class ProfileDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Cabeçalho com foto de perfil (avatar)
             Container(
               padding: EdgeInsets.fromLTRB(0, 30, 0, 30),
               decoration: BoxDecoration(
@@ -75,10 +74,8 @@ class ProfileDialog extends StatelessWidget {
               ),
             ),
 
-            // Informações do usuário
             SizedBox(height: 20),
 
-            // ID do usuário
             _buildInfoItem(
               context,
               icon: Icons.badge,
@@ -86,7 +83,6 @@ class ProfileDialog extends StatelessWidget {
               value: "#${user!.id}",
             ),
 
-            // Papéis do usuário
             _buildInfoItem(
               context,
               icon: Icons.work,
@@ -94,7 +90,6 @@ class ProfileDialog extends StatelessWidget {
               value: user!.roles.join(", "),
             ),
 
-            // Papel atual
             Consumer<AuthViewModel>(
               builder: (context, authViewModel, child) {
                 return _buildInfoItem(
@@ -106,12 +101,10 @@ class ProfileDialog extends StatelessWidget {
               },
             ),
 
-            // Botões
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Botão fechar
                 OutlinedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -129,7 +122,7 @@ class ProfileDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 15),
-                // Botão logout
+
                 ElevatedButton.icon(
                   onPressed: () async {
                     Navigator.of(context).pop();
@@ -244,7 +237,6 @@ class ProfileDialog extends StatelessWidget {
     );
   }
 
-  // Função para obter as iniciais do nome do usuário
   String _getInitials(String name) {
     if (name.isEmpty) return "?";
 
@@ -255,4 +247,5 @@ class ProfileDialog extends StatelessWidget {
 
     return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
   }
+
 }

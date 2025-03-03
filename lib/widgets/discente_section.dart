@@ -40,15 +40,8 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
         _errorMessage = '';
       });
 
-      // Log para debug
-      developer.log('DiscenteSection: Iniciando carregamento de dados');
-
-      // Carrega chaves e empréstimos
       await keysViewModel.fetchKeys(authViewModel);
       await loansViewModel.fetchActiveLoans(authViewModel);
-
-      developer.log('DiscenteSection: Dados carregados com sucesso');
-      developer.log('DiscenteSection: ${loansViewModel.loans.length} empréstimos encontrados');
 
     } catch (e, stackTrace) {
       developer.log(
@@ -82,7 +75,6 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
 
     final userName = authViewModel.user?.name ?? "Discente";
 
-    // Se houver um erro grave, mostrar mensagem
     if (_hasError) {
       return _buildErrorState(_errorMessage);
     }
@@ -91,7 +83,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
       backgroundColor: Colors.grey[100],
       body: Column(
         children: [
-          // Header section with welcome message
+
           Container(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
             child: Column(
@@ -118,7 +110,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
             ),
           ),
 
-          // Tab bar for navigation
+
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -149,7 +141,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
             ),
           ),
 
-          // Tab views
+
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -257,7 +249,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
       return _buildEmptyState('Você não possui empréstimos ativos.', Icons.assignment);
     }
 
-    // Tentativa com try/catch
+
     try {
       return RefreshIndicator(
         onRefresh: () async {
@@ -289,7 +281,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
   }
 
   Widget _buildLoanCard(loan) {
-    // Verificamos se o loan é nulo
+
     if (loan == null) {
       developer.log("Erro: loan é nulo");
       return Card(
@@ -300,12 +292,10 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
       );
     }
 
-    // Verificações de segurança para todos os campos utilizados
     final keyLabel = loan.key?.label ?? "Chave sem nome";
     final keyDescription = loan.key?.description ?? "Local não especificado";
     final givenByName = loan.givenByName ?? "Não especificado";
 
-    // Format the borrowedAt date
     final originalDate = loan.borrowedAt ?? "Data não disponível";
     String formattedDate = originalDate;
 
@@ -313,7 +303,6 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
       final date = DateTime.parse(originalDate);
       formattedDate = "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     } catch (e) {
-      // Keep original format if parsing fails
       developer.log("Erro ao formatar data: $e");
     }
 

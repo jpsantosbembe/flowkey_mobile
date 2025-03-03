@@ -67,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Verificar se o usuário já está logado
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkLogin();
     });
@@ -76,21 +75,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Future<void> _checkLogin() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-    // Atraso mínimo para mostrar a splash screen
     await Future.delayed(Duration(seconds: 2));
 
     final isLoggedIn = await authViewModel.checkLoggedInUser();
 
     if (isLoggedIn) {
       if (authViewModel.selectedRole != null) {
-        // Se já tem papel selecionado, vai direto para home
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
-        // Se não tem papel selecionado, vai para seleção de papel
         Navigator.of(context).pushReplacementNamed('/role_selection');
       }
     } else {
-      // Se não está logado, vai para tela de login
       Navigator.of(context).pushReplacementNamed('/login');
     }
   }
@@ -120,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo animado
+
               FadeTransition(
                 opacity: _animation,
                 child: ScaleTransition(
@@ -142,7 +137,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
               SizedBox(height: 30),
 
-              // Nome do app
               FadeTransition(
                 opacity: _animation,
                 child: Text(
@@ -157,7 +151,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
               SizedBox(height: 10),
 
-              // Subtítulo
               FadeTransition(
                 opacity: _animation,
                 child: Text(
@@ -171,7 +164,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
               SizedBox(height: 50),
 
-              // Indicador de carregamento
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),

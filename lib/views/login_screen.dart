@@ -19,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Carregar credenciais salvas no início
     _loadSavedCredentials();
   }
 
@@ -45,7 +44,6 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background com gradiente
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -62,7 +60,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // Conteúdo principal
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -87,7 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       SizedBox(height: 24),
 
-                      // Título
                       Text(
                         "FlowKey",
                         style: TextStyle(
@@ -99,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       SizedBox(height: 8),
 
-                      // Subtítulo
                       Text(
                         "Sistema de Controle de Chaves",
                         style: TextStyle(
@@ -139,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             SizedBox(height: 24),
 
-                            // Campo de email
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
@@ -159,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             SizedBox(height: 16),
 
-                            // Campo de senha
                             TextField(
                               controller: _passwordController,
                               obscureText: !_passwordVisible,
@@ -192,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             SizedBox(height: 16),
 
-                            // Checkbox "Lembrar senha"
                             Row(
                               children: [
                                 Checkbox(
@@ -205,34 +197,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                 ),
                                 Text("Lembrar senha"),
-
-                                Spacer(),
-
-                                // Link "Esqueci minha senha"
-                                TextButton(
-                                  onPressed: () {
-                                    // Implementar recuperação de senha
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Função não implementada'),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    "Esqueci minha senha",
-                                    style: TextStyle(
-                                      color: Colors.blue[700],
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
                               ],
                             ),
 
                             SizedBox(height: 24),
 
-                            // Botão de login
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -245,7 +214,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   final email = _emailController.text;
                                   final password = _passwordController.text;
 
-                                  // Salvar credenciais se marcado
                                   if (_rememberPassword) {
                                     await authViewModel.saveCredentials(email, password);
                                   } else {
@@ -300,14 +268,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       SizedBox(height: 40),
 
-                      // Versão
-                      Text(
-                        "v1.0.0",
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
-                          fontSize: 12,
-                        ),
-                      ),
                     ],
                   ),
                 ),

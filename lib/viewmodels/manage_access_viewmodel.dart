@@ -44,11 +44,9 @@ class ManageAccessViewModel extends ChangeNotifier {
     );
 
     if (success) {
-      // 🔥 Remove o usuário da lista localmente
       _authorizations.removeWhere((auth) => auth.userId == userId);
       notifyListeners();
     } else {
-      // 🔥 Se der erro, exibe um alerta na tela
       print("Erro: Não foi possível remover o usuário.");
     }
   }
@@ -79,6 +77,5 @@ class ManageAccessViewModel extends ChangeNotifier {
     _debounce?.cancel();
     notifyListeners();
   }
-
 
 }

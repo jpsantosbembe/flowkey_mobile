@@ -22,14 +22,8 @@ class LoanModel {
   });
 
   factory LoanModel.fromJson(Map<String, dynamic> json) {
-    // Print para debug - visualizar a estrutura completa do JSON
-    print("Recebido JSON de empréstimo: ${json.keys.join(', ')}");
-
     String borrowedBy = 'Usuário atual';
-
-    // Verificar se existe o campo borrowed_by no JSON
     if (json.containsKey('borrowed_by')) {
-      // Se existir e for um Map, pegar o name
       if (json['borrowed_by'] is Map) {
         borrowedBy = json['borrowed_by']['name'] ?? borrowedBy;
       }

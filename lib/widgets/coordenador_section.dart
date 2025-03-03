@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/keys_viewmodel.dart';
@@ -45,7 +47,7 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
       backgroundColor: Colors.grey[100],
       body: Column(
         children: [
-          // Header section with welcome message
+
           Container(
             padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
             child: Column(
@@ -72,7 +74,6 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
             ),
           ),
 
-          // Tab bar for navigation
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -103,7 +104,6 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
             ),
           ),
 
-          // Tab views
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -251,7 +251,6 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
   }
 
   Widget _buildLoanCard(loan) {
-    // Format the borrowedAt date
     final originalDate = loan.borrowedAt;
     String formattedDate = originalDate;
 
@@ -259,7 +258,7 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
       final date = DateTime.parse(originalDate);
       formattedDate = "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     } catch (e) {
-      // Keep original format if parsing fails
+      developer.log("Erro ao formatar data: $e");
     }
 
     return Card(

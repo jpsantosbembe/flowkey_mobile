@@ -27,7 +27,6 @@ class ApiService {
 
   Future<List<KeyModel>> fetchUserKeys(int userId, String token, {bool isCoordinator = false}) async {
     try {
-      // 🔥 Se for coordenador, busca na rota correta
       String endpoint = isCoordinator
           ? '$apiUrl/api/user/$userId/coordinator-keys'
           : '$apiUrl/api/user/$userId/keys';
@@ -48,7 +47,6 @@ class ApiService {
     }
     return [];
   }
-
 
   Future<List<LoanModel>> fetchActiveLoans(int userId, String token, {bool isCoordinator = false}) async {
     try {
@@ -73,7 +71,6 @@ class ApiService {
     }
     return [];
   }
-
 
   Future<List<KeyModel>> fetchKeys(int userId, String token, {bool isCoordinator = false}) async {
     try {
@@ -138,13 +135,13 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return true; // ✅ Remoção bem-sucedida
+        return true;
       } else {
         print("Erro ao revogar acesso: ${response.statusCode} - ${response.data}");
         return false;
       }
     } catch (e) {
-      print('Erro ao revogar acesso: $e'); // 🔥 Agora veremos o erro real no console
+      print('Erro ao revogar acesso: $e');
       return false;
     }
   }

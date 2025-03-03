@@ -1,3 +1,4 @@
+import 'package:flowkey_mobile/views/guarda_screen.dart';
 import 'package:flowkey_mobile/views/profile_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends StatelessWidget {
         case 'admin':
           return AdminSection();
         case 'guarda':
-          return GuardaScreen();
+          return GuardaSection();
         case 'discente':
           return DiscenteSection();
         case 'coordenador':
@@ -82,7 +83,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Função para obter a cor baseada no papel do usuário
   Color getRoleColor(String role) {
     switch (role.toLowerCase()) {
       case 'coordenador':
@@ -96,7 +96,6 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  // Função para obter o ícone baseado no papel do usuário
   IconData getRoleIcon(String role) {
     switch (role.toLowerCase()) {
       case 'coordenador':
@@ -110,7 +109,6 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  // Função para obter o título baseado no papel do usuário
   String getRoleTitle(String role) {
     switch (role.toLowerCase()) {
       case 'coordenador':
@@ -123,13 +121,5 @@ class HomeScreen extends StatelessWidget {
         return 'Portal FlowKey';
     }
   }
-}
 
-class GuardaScreen extends StatelessWidget {
-  const GuardaScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Tela de Guarda', style: TextStyle(fontSize: 22)));
-  }
 }

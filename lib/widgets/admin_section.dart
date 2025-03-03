@@ -18,7 +18,7 @@ class AdminSection extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Ícone grande
+
               Container(
                 width: 120,
                 height: 120,
@@ -35,7 +35,7 @@ class AdminSection extends StatelessWidget {
 
               SizedBox(height: 40),
 
-              // Título
+
               Text(
                 "Acesso restrito",
                 style: TextStyle(
@@ -48,7 +48,7 @@ class AdminSection extends StatelessWidget {
 
               SizedBox(height: 20),
 
-              // Mensagem explicativa
+
               Container(
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -119,7 +119,7 @@ class AdminSection extends StatelessWidget {
 
               SizedBox(height: 40),
 
-              // Botão de sair
+
               SizedBox(
                 width: 200,
                 height: 50,
