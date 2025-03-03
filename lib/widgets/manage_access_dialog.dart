@@ -91,7 +91,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
               ),
             ),
 
-            // Corpo principal com fundo branco consistente
             Expanded(
               child: Container(
                 color: Colors.white,
@@ -154,7 +153,6 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                             ],
                           ),
 
-                          // Search results
                           if (_isSearchExpanded)
                             Expanded(
                               child: manageAccessViewModel.isSearching
@@ -171,6 +169,10 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                                 itemCount: manageAccessViewModel.searchResults.length,
                                 itemBuilder: (context, index) {
                                   final user = manageAccessViewModel.searchResults[index];
+
+                                  final bool isAlreadyAuthorized =
+                                  manageAccessViewModel.isUserAuthorized(user.id);
+
                                   return Container(
                                     margin: EdgeInsets.only(bottom: 8),
                                     decoration: BoxDecoration(
@@ -191,16 +193,63 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                                         user.email,
                                         style: TextStyle(fontSize: 12),
                                       ),
-                                      trailing: IconButton(
-                                        icon: Icon(Icons.add_circle, color: Colors.green[600]),
-                                        onPressed: () {
-                                          // Logic to add authorization will be implemented later
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text("Função para adicionar acesso ainda não implementada"),
-                                              behavior: SnackBarBehavior.floating,
-                                            ),
+                                      trailing: isAlreadyAuthorized
+                                          ? Chip(
+                                        label: Text(
+                                          "Autorizado",
+                                          style: TextStyle(
+                                            color: Colors.green[800],
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.green[100],
+                                      )
+                                          : manageAccessViewModel.isAddingUser
+                                          ? SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                          : IconButton(
+                                        icon: Icon(
+                                          Icons.add_circle,
+                                          color: Colors.green[600],
+                                        ),
+                                        onPressed: () async {
+
+                                          final success = await manageAccessViewModel.addAuthorization(
+                                            authViewModel,
+                                            user.id,
+                                            widget.keyModel.id,
                                           );
+
+                                          if (success) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "Acesso concedido para ${user.name}",
+                                                ),
+                                                backgroundColor: Colors.green,
+                                                behavior: SnackBarBehavior.floating,
+                                              ),
+                                            );
+                                            setState(() {
+                                              _searchController.clear();
+                                              _isSearchExpanded = false;
+                                            });
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "Erro ao conceder acesso",
+                                                ),
+                                                backgroundColor: Colors.red,
+                                                behavior: SnackBarBehavior.floating,
+                                              ),
+                                            );
+                                          }
                                         },
                                       ),
                                     ),
@@ -231,11 +280,19 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                               color: Colors.blue[800],
                             ),
                           ),
+                          Spacer(),
+                          if (manageAccessViewModel.authorizations.isNotEmpty)
+                            Text(
+                              "${manageAccessViewModel.authorizations.length} ${manageAccessViewModel.authorizations.length == 1 ? 'usuário' : 'usuários'}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
                         ],
                       ),
                     ),
 
-                    // Lista de usuários autorizados - agora com fundo branco
                     Expanded(
                       child: manageAccessViewModel.isLoading
                           ? Center(child: CircularProgressIndicator())
