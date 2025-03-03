@@ -73,4 +73,12 @@ class ManageAccessViewModel extends ChangeNotifier {
     });
   }
 
+  void clearSearchResults() {
+    _searchResults = [];
+    _isSearching = false;
+    _debounce?.cancel();
+    notifyListeners();
+  }
+
+
 }

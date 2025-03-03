@@ -23,9 +23,12 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
     final manageAccessViewModel = Provider.of<ManageAccessViewModel>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchController.clear(); // 🔥 Limpa o campo de pesquisa
+      manageAccessViewModel.clearSearchResults(); // 🔥 Limpa os resultados da pesquisa
       manageAccessViewModel.fetchAuthorizations(authViewModel, widget.keyModel.id);
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
