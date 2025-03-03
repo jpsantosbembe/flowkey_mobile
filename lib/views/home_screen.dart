@@ -1,3 +1,4 @@
+import 'package:flowkey_mobile/models/user_model.dart';
 import 'package:flowkey_mobile/views/guarda_screen.dart';
 import 'package:flowkey_mobile/views/profile_dialog.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(width: 10),
             Text(
-              getRoleTitle(role),
+              getWelcomeTitle(user),
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -109,17 +110,13 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  String getRoleTitle(String role) {
-    switch (role.toLowerCase()) {
-      case 'coordenador':
-        return 'Portal do Coordenador';
-      case 'discente':
-        return 'Portal do Discente';
-      case 'guarda':
-        return 'Portal do Guarda';
-      default:
-        return 'Portal FlowKey';
+  String getWelcomeTitle(UserModel? user) {
+    if (user == null) {
+      return 'Bem-vindo';
     }
+
+    final firstName = user.name.split(' ')[0];
+    return 'Bem-vindo, $firstName';
   }
 
 }

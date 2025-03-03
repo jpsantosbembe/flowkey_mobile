@@ -49,32 +49,6 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
         children: [
 
           Container(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Bem-vindo(a), $userName',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[800],
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Acesso de Coordenador',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.blue[600],
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-
-          Container(
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -108,11 +82,11 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
             child: TabBarView(
               controller: _tabController,
               children: [
-                // Keys Tab
+
                 _buildKeysTab(keysViewModel),
 
-                // Loans Tab
                 _buildLoansTab(loansViewModel),
+
               ],
             ),
           ),
@@ -209,7 +183,10 @@ class _CoordenadorSectionState extends State<CoordenadorSection> with SingleTick
                       builder: (context) => ManageAccessDialog(keyModel: key),
                     );
                   },
-                  icon: Icon(Icons.people),
+                  icon: Icon(
+                    Icons.people,
+                    color: Colors.white,
+                  ),
                   label: Text("Gerenciar Acessos"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[700],
