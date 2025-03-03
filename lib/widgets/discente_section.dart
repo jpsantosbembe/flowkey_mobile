@@ -85,33 +85,6 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
         children: [
 
           Container(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Bem-vindo(a), $userName',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.indigo[800],
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  'Acesso de Discente',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.indigo[600],
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
-            ),
-          ),
-
-
-          Container(
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -124,9 +97,9 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
             ),
             child: TabBar(
               controller: _tabController,
-              labelColor: Colors.indigo[800],
+              labelColor: Colors.purple[500]!,
               unselectedLabelColor: Colors.grey[600],
-              indicatorColor: Colors.indigo[800],
+              indicatorColor: Colors.purple[500]!,
               indicatorWeight: 3,
               tabs: [
                 Tab(
@@ -192,7 +165,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.indigo[50]!],
+            colors: [Colors.white, Colors.purple[50]!],
           ),
         ),
         child: Padding(
@@ -202,10 +175,10 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.indigo[100],
+                  color: Colors.purple[100]!,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.vpn_key, color: Colors.indigo[800]),
+                child: Icon(Icons.vpn_key, color: Colors.purple[800]!),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -217,7 +190,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.indigo[800],
+                        color: Colors.purple[800]!,
                       ),
                     ),
                     SizedBox(height: 4),

@@ -89,7 +89,7 @@ class HomeScreen extends StatelessWidget {
       case 'coordenador':
         return Colors.blue[800]!;
       case 'discente':
-        return Colors.indigo[800]!;
+        return Colors.purple[500]!;
       case 'guarda':
         return Colors.green[800]!;
       default:
