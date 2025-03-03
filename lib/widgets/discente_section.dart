@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../viewmodels/keys_viewmodel.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../viewmodels/loans_viewmodel.dart';
+import 'dart:developer' as developer;
 
 class DiscenteSection extends StatefulWidget {
   @override
@@ -11,6 +12,8 @@ class DiscenteSection extends StatefulWidget {
 
 class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _hasError = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -22,9 +25,43 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
     final loansViewModel = Provider.of<LoansViewModel>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      keysViewModel.fetchKeys(authViewModel);
-      loansViewModel.fetchActiveLoans(authViewModel);
+      _loadData(authViewModel, keysViewModel, loansViewModel);
     });
+  }
+
+  Future<void> _loadData(
+      AuthViewModel authViewModel,
+      KeysViewModel keysViewModel,
+      LoansViewModel loansViewModel
+      ) async {
+    try {
+      setState(() {
+        _hasError = false;
+        _errorMessage = '';
+      });
+
+      // Log para debug
+      developer.log('DiscenteSection: Iniciando carregamento de dados');
+
+      // Carrega chaves e empréstimos
+      await keysViewModel.fetchKeys(authViewModel);
+      await loansViewModel.fetchActiveLoans(authViewModel);
+
+      developer.log('DiscenteSection: Dados carregados com sucesso');
+      developer.log('DiscenteSection: ${loansViewModel.loans.length} empréstimos encontrados');
+
+    } catch (e, stackTrace) {
+      developer.log(
+        'DiscenteSection: Erro ao carregar dados',
+        error: e,
+        stackTrace: stackTrace,
+      );
+
+      setState(() {
+        _hasError = true;
+        _errorMessage = e.toString();
+      });
+    }
   }
 
   @override
@@ -38,7 +75,17 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
     final keysViewModel = Provider.of<KeysViewModel>(context);
     final loansViewModel = Provider.of<LoansViewModel>(context);
     final authViewModel = Provider.of<AuthViewModel>(context);
+
+    developer.log(
+      'DiscenteSection build: ${loansViewModel.loans.length} empréstimos, isLoading: ${loansViewModel.isLoading}',
+    );
+
     final userName = authViewModel.user?.name ?? "Discente";
+
+    // Se houver um erro grave, mostrar mensagem
+    if (_hasError) {
+      return _buildErrorState(_errorMessage);
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -108,10 +155,10 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
               controller: _tabController,
               children: [
                 // Keys Tab
-                _buildKeysTab(keysViewModel),
+                _buildKeysTab(keysViewModel, authViewModel),
 
                 // Loans Tab
-                _buildLoansTab(loansViewModel),
+                _buildLoansTab(loansViewModel, authViewModel),
               ],
             ),
           ),
@@ -120,14 +167,13 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
     );
   }
 
-  Widget _buildKeysTab(KeysViewModel keysViewModel) {
+  Widget _buildKeysTab(KeysViewModel keysViewModel, AuthViewModel authViewModel) {
     return keysViewModel.isLoading
         ? Center(child: CircularProgressIndicator())
         : keysViewModel.keys.isEmpty
         ? _buildEmptyState('Você não possui acessos cadastrados.', Icons.vpn_key)
         : RefreshIndicator(
       onRefresh: () async {
-        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
         await keysViewModel.fetchKeys(authViewModel);
       },
       child: ListView.builder(
@@ -200,30 +246,67 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
     );
   }
 
-  Widget _buildLoansTab(LoansViewModel loansViewModel) {
-    return loansViewModel.isLoading
-        ? Center(child: CircularProgressIndicator())
-        : loansViewModel.loans.isEmpty
-        ? _buildEmptyState('Você não possui empréstimos ativos.', Icons.assignment)
-        : RefreshIndicator(
-      onRefresh: () async {
-        final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-        await loansViewModel.fetchActiveLoans(authViewModel);
-      },
-      child: ListView.builder(
-        padding: EdgeInsets.all(16),
-        itemCount: loansViewModel.loans.length,
-        itemBuilder: (context, index) {
-          final loan = loansViewModel.loans[index];
-          return _buildLoanCard(loan);
+  Widget _buildLoansTab(LoansViewModel loansViewModel, AuthViewModel authViewModel) {
+    developer.log('Building loans tab. Loans count: ${loansViewModel.loans.length}');
+
+    if (loansViewModel.isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (loansViewModel.loans.isEmpty) {
+      return _buildEmptyState('Você não possui empréstimos ativos.', Icons.assignment);
+    }
+
+    // Tentativa com try/catch
+    try {
+      return RefreshIndicator(
+        onRefresh: () async {
+          await loansViewModel.fetchActiveLoans(authViewModel);
         },
-      ),
-    );
+        child: ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount: loansViewModel.loans.length,
+          itemBuilder: (context, index) {
+            try {
+              final loan = loansViewModel.loans[index];
+              return _buildLoanCard(loan);
+            } catch (e) {
+              developer.log('Erro ao construir card de empréstimo: $e');
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text("Erro ao exibir empréstimo #${index + 1}"),
+                ),
+              );
+            }
+          },
+        ),
+      );
+    } catch (e) {
+      developer.log('Erro ao construir lista de empréstimos: $e');
+      return _buildErrorState('Erro ao exibir empréstimos: $e');
+    }
   }
 
   Widget _buildLoanCard(loan) {
+    // Verificamos se o loan é nulo
+    if (loan == null) {
+      developer.log("Erro: loan é nulo");
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text("Erro ao carregar dados do empréstimo"),
+        ),
+      );
+    }
+
+    // Verificações de segurança para todos os campos utilizados
+    final keyLabel = loan.key?.label ?? "Chave sem nome";
+    final keyDescription = loan.key?.description ?? "Local não especificado";
+    final givenByName = loan.givenByName ?? "Não especificado";
+
     // Format the borrowedAt date
-    final originalDate = loan.borrowedAt;
+    final originalDate = loan.borrowedAt ?? "Data não disponível";
     String formattedDate = originalDate;
 
     try {
@@ -231,6 +314,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
       formattedDate = "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     } catch (e) {
       // Keep original format if parsing fails
+      developer.log("Erro ao formatar data: $e");
     }
 
     return Card(
@@ -266,7 +350,7 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      loan.key.label,
+                      keyLabel,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -286,9 +370,9 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
                 ),
                 child: Column(
                   children: [
-                    _buildLoanInfoRow(Icons.location_on, "Local", loan.key.description),
+                    _buildLoanInfoRow(Icons.location_on, "Local", keyDescription),
                     Divider(height: 20),
-                    _buildLoanInfoRow(Icons.person_outline, "Entregue por", loan.givenByName),
+                    _buildLoanInfoRow(Icons.person_outline, "Entregue por", givenByName),
                     Divider(height: 20),
                     _buildLoanInfoRow(Icons.access_time, "Data/Hora", formattedDate),
                   ],
@@ -347,6 +431,62 @@ class _DiscenteSectionState extends State<DiscenteSection> with SingleTickerProv
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 70,
+              color: Colors.red[400],
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Ops! Algo deu errado",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.red[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[800],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+                final keysViewModel = Provider.of<KeysViewModel>(context, listen: false);
+                final loansViewModel = Provider.of<LoansViewModel>(context, listen: false);
+                _loadData(authViewModel, keysViewModel, loansViewModel);
+              },
+              icon: Icon(Icons.refresh),
+              label: Text("Tentar novamente"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo[600],
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

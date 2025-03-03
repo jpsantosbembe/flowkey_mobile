@@ -8,7 +8,7 @@ class LoanModel {
   final String borrowedAt;
   final KeyModel key;
   final String givenByName;
-  final String borrowedByName; // 🔥 Novo campo
+  final String borrowedByName;
 
   LoanModel({
     required this.id,
@@ -22,6 +22,19 @@ class LoanModel {
   });
 
   factory LoanModel.fromJson(Map<String, dynamic> json) {
+    // Print para debug - visualizar a estrutura completa do JSON
+    print("Recebido JSON de empréstimo: ${json.keys.join(', ')}");
+
+    String borrowedBy = 'Usuário atual';
+
+    // Verificar se existe o campo borrowed_by no JSON
+    if (json.containsKey('borrowed_by')) {
+      // Se existir e for um Map, pegar o name
+      if (json['borrowed_by'] is Map) {
+        borrowedBy = json['borrowed_by']['name'] ?? borrowedBy;
+      }
+    }
+
     return LoanModel(
       id: json['id'],
       borrowedByUserId: json['borrowed_by_user_id'],
@@ -29,8 +42,8 @@ class LoanModel {
       borrowedKeyId: json['borrowed_key_id'],
       borrowedAt: json['borrowed_at'],
       key: KeyModel.fromJson(json['key']),
-      givenByName: json['given_by']['name'],
-      borrowedByName: json['borrowed_by']['name'],
+      givenByName: json['given_by'] != null ? json['given_by']['name'] : 'Desconhecido',
+      borrowedByName: borrowedBy,
     );
   }
 }

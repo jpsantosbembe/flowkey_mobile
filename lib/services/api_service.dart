@@ -52,7 +52,6 @@ class ApiService {
 
   Future<List<LoanModel>> fetchActiveLoans(int userId, String token, {bool isCoordinator = false}) async {
     try {
-      // 🔥 Se for coordenador, busca na rota correta
       String endpoint = isCoordinator
           ? '$apiUrl/api/coordinator/$userId/loans/active'
           : '$apiUrl/api/user/$userId/loans/active';
@@ -66,6 +65,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         List<dynamic> data = response.data;
+        print(response.data);
         return data.map((json) => LoanModel.fromJson(json)).toList();
       }
     } catch (e) {
@@ -77,7 +77,6 @@ class ApiService {
 
   Future<List<KeyModel>> fetchKeys(int userId, String token, {bool isCoordinator = false}) async {
     try {
-      // 🔥 Se for coordenador, busca na rota correta
       String endpoint = isCoordinator
           ? '$apiUrl/api/user/$userId/coordinator-keys'
           : '$apiUrl/api/user/$userId/keys';
