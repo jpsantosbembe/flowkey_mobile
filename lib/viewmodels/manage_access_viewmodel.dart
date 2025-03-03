@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../models/authorization_model.dart';
 import '../services/api_service.dart';
@@ -9,6 +11,7 @@ class ManageAccessViewModel extends ChangeNotifier {
   List<UserModel> _searchResults = [];
   bool _isLoading = false;
   bool _isSearching = false;
+  Timer? _debounce;
 
   List<AuthorizationModel> get authorizations => _authorizations;
   List<UserModel> get searchResults => _searchResults;
@@ -50,20 +53,24 @@ class ManageAccessViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> searchUsers(AuthViewModel authViewModel, String query) async {
-    if (authViewModel.user == null || query.isEmpty) {
-      _searchResults = [];
+  void searchUsers(AuthViewModel authViewModel, String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(Duration(milliseconds: 500), () async {
+      if (authViewModel.user == null || query.isEmpty) {
+        _searchResults = [];
+        notifyListeners();
+        return;
+      }
+
+      _isSearching = true;
       notifyListeners();
-      return;
-    }
 
-    _isSearching = true;
-    notifyListeners();
+      _searchResults = await _apiService.searchUsers(query, await authViewModel.getToken() ?? "");
 
-    _searchResults = await _apiService.searchUsers(query, await authViewModel.getToken() ?? "");
-
-    _isSearching = false;
-    notifyListeners();
+      _isSearching = false;
+      notifyListeners();
+    });
   }
 
 }
