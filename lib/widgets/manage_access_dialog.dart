@@ -91,108 +91,208 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
               ),
             ),
 
-            AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              height: _isSearchExpanded ? 210 : 80,
-              padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
-              decoration: BoxDecoration(
+            // Corpo principal com fundo branco consistente
+            Expanded(
+              child: Container(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: "Pesquisar usuário...",
-                            prefixIcon: Icon(Icons.search, color: Colors.blue[600]),
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 12),
-                            hintStyle: TextStyle(color: Colors.grey[500]),
+                child: Column(
+                  children: [
+                    // Search container
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      height: _isSearchExpanded ? 210 : 80,
+                      padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 5,
+                            spreadRadius: 1,
                           ),
-                          onChanged: (value) {
-                            if (value.length > 2) {
-                              setState(() => _isSearchExpanded = true);
-                              manageAccessViewModel.searchUsers(authViewModel, value);
-                            } else if (value.isEmpty) {
-                              setState(() => _isSearchExpanded = false);
-                              manageAccessViewModel.clearSearchResults();
-                            }
-                          },
-                        ),
+                        ],
                       ),
-                      if (_isSearchExpanded && _searchController.text.isNotEmpty)
-                        IconButton(
-                          icon: Icon(Icons.clear, color: Colors.grey[600]),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _isSearchExpanded = false);
-                            manageAccessViewModel.clearSearchResults();
-                          },
-                        ),
-                    ],
-                  ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  decoration: InputDecoration(
+                                    hintText: "Pesquisar usuário...",
+                                    prefixIcon: Icon(Icons.search, color: Colors.blue[600]),
+                                    filled: true,
+                                    fillColor: Colors.grey[100],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                                    hintStyle: TextStyle(color: Colors.grey[500]),
+                                  ),
+                                  onChanged: (value) {
+                                    if (value.length > 2) {
+                                      setState(() => _isSearchExpanded = true);
+                                      manageAccessViewModel.searchUsers(authViewModel, value);
+                                    } else if (value.isEmpty) {
+                                      setState(() => _isSearchExpanded = false);
+                                      manageAccessViewModel.clearSearchResults();
+                                    }
+                                  },
+                                ),
+                              ),
+                              if (_isSearchExpanded && _searchController.text.isNotEmpty)
+                                IconButton(
+                                  icon: Icon(Icons.clear, color: Colors.grey[600]),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _isSearchExpanded = false);
+                                    manageAccessViewModel.clearSearchResults();
+                                  },
+                                ),
+                            ],
+                          ),
 
-                  if (_isSearchExpanded)
+                          // Search results
+                          if (_isSearchExpanded)
+                            Expanded(
+                              child: manageAccessViewModel.isSearching
+                                  ? Center(child: CircularProgressIndicator())
+                                  : manageAccessViewModel.searchResults.isEmpty && _searchController.text.length > 2
+                                  ? Center(
+                                child: Text(
+                                  "Nenhum usuário encontrado",
+                                  style: TextStyle(color: Colors.grey[600]),
+                                ),
+                              )
+                                  : ListView.builder(
+                                padding: EdgeInsets.only(top: 10),
+                                itemCount: manageAccessViewModel.searchResults.length,
+                                itemBuilder: (context, index) {
+                                  final user = manageAccessViewModel.searchResults[index];
+                                  return Container(
+                                    margin: EdgeInsets.only(bottom: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: ListTile(
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                                      leading: CircleAvatar(
+                                        backgroundColor: Colors.blue[100],
+                                        child: Icon(Icons.person, color: Colors.blue[800]),
+                                      ),
+                                      title: Text(
+                                        user.name,
+                                        style: TextStyle(fontWeight: FontWeight.w500),
+                                      ),
+                                      subtitle: Text(
+                                        user.email,
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      trailing: IconButton(
+                                        icon: Icon(Icons.add_circle, color: Colors.green[600]),
+                                        onPressed: () {
+                                          // Logic to add authorization will be implemented later
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text("Função para adicionar acesso ainda não implementada"),
+                                              behavior: SnackBarBehavior.floating,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    // Title for authorized users list
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(24, 16, 24, 8),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.people,
+                            size: 18,
+                            color: Colors.blue[800],
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Usuários Autorizados",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Lista de usuários autorizados - agora com fundo branco
                     Expanded(
-                      child: manageAccessViewModel.isSearching
+                      child: manageAccessViewModel.isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : manageAccessViewModel.searchResults.isEmpty && _searchController.text.length > 2
+                          : manageAccessViewModel.authorizations.isEmpty
                           ? Center(
-                        child: Text(
-                          "Nenhum usuário encontrado",
-                          style: TextStyle(color: Colors.grey[600]),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.people_outline,
+                              size: 48,
+                              color: Colors.grey[400],
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              "Nenhum usuário autorizado",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                           : ListView.builder(
-                        padding: EdgeInsets.only(top: 10),
-                        itemCount: manageAccessViewModel.searchResults.length,
+                        padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
+                        itemCount: manageAccessViewModel.authorizations.length,
                         itemBuilder: (context, index) {
-                          final user = manageAccessViewModel.searchResults[index];
+                          final auth = manageAccessViewModel.authorizations[index];
                           return Container(
                             margin: EdgeInsets.only(bottom: 8),
                             decoration: BoxDecoration(
                               color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
                             ),
                             child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               leading: CircleAvatar(
                                 backgroundColor: Colors.blue[100],
-                                child: Icon(Icons.person, color: Colors.blue[800]),
+                                child: Text(
+                                  auth.user.name.isNotEmpty ? auth.user.name[0].toUpperCase() : "?",
+                                  style: TextStyle(
+                                    color: Colors.blue[800],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                               title: Text(
-                                user.name,
-                                style: TextStyle(fontWeight: FontWeight.w500),
+                                auth.user.name,
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
-                              subtitle: Text(
-                                user.email,
-                                style: TextStyle(fontSize: 12),
-                              ),
+                              subtitle: Text(auth.user.email),
                               trailing: IconButton(
-                                icon: Icon(Icons.add_circle, color: Colors.green[600]),
+                                icon: Icon(Icons.delete_outline, color: Colors.red[400]),
                                 onPressed: () {
-                                  // Logic to add authorization will be implemented later
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("Função para adicionar acesso ainda não implementada"),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
+                                  _showDeleteConfirmation(context, auth, manageAccessViewModel, authViewModel);
                                 },
                               ),
                             ),
@@ -200,84 +300,8 @@ class _ManageAccessDialogState extends State<ManageAccessDialog> {
                         },
                       ),
                     ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(24, 16, 24, 8),
-              child: Text(
-                "Usuários Autorizados",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-              ),
-            ),
-
-            Expanded(
-              child: manageAccessViewModel.isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : manageAccessViewModel.authorizations.isEmpty
-                  ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.people_outline,
-                      size: 48,
-                      color: Colors.grey[400],
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Nenhum usuário autorizado",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
-                    ),
                   ],
                 ),
-              )
-                  : ListView.builder(
-                padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
-                itemCount: manageAccessViewModel.authorizations.length,
-                itemBuilder: (context, index) {
-                  final auth = manageAccessViewModel.authorizations[index];
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[200]!),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blue[100],
-                        child: Text(
-                          auth.user.name.isNotEmpty ? auth.user.name[0].toUpperCase() : "?",
-                          style: TextStyle(
-                            color: Colors.blue[800],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        auth.user.name,
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(auth.user.email),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete_outline, color: Colors.red[400]),
-                        onPressed: () {
-                          _showDeleteConfirmation(context, auth, manageAccessViewModel, authViewModel);
-                        },
-                      ),
-                    ),
-                  );
-                },
               ),
             ),
           ],

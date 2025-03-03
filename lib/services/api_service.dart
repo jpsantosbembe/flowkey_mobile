@@ -167,4 +167,35 @@ class ApiService {
     return [];
   }
 
+  Future<bool> authorizeAccess(int userId, int keyId, String token) async {
+    try {
+      String endpoint = '$apiUrl/api/key/authorize';
+
+      Response response = await _dio.post(
+        endpoint,
+        data: {
+          "user_id": userId,
+          "key_id": keyId,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("Acesso autorizado com sucesso!");
+        return true;
+      } else {
+        print("Erro ao autorizar acesso: ${response.statusCode} - ${response.data}");
+        return false;
+      }
+    } catch (e) {
+      print('Erro ao autorizar acesso: $e');
+      return false;
+    }
+  }
+
 }

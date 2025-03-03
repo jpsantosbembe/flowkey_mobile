@@ -11,11 +11,13 @@ class ManageAccessViewModel extends ChangeNotifier {
   List<UserModel> _searchResults = [];
   bool _isLoading = false;
   bool _isSearching = false;
+  bool _isAddingUser = false;
   Timer? _debounce;
 
   List<AuthorizationModel> get authorizations => _authorizations;
   List<UserModel> get searchResults => _searchResults;
   bool get isLoading => _isLoading;
+  bool get isAddingUser => _isAddingUser;
   bool get isSearching => _isSearching;
 
   Future<void> fetchAuthorizations(AuthViewModel authViewModel, int keyId) async {
@@ -49,6 +51,39 @@ class ManageAccessViewModel extends ChangeNotifier {
     } else {
       print("Erro: Não foi possível remover o usuário.");
     }
+  }
+
+  Future<bool> addAuthorization(AuthViewModel authViewModel, int userId, int keyId) async {
+    if (authViewModel.user == null) return false;
+
+    _isAddingUser = true;
+    notifyListeners();
+
+    try {
+      bool success = await _apiService.authorizeAccess(
+        userId,
+        keyId,
+        await authViewModel.getToken() ?? "",
+      );
+
+      if (success) {
+        await fetchAuthorizations(authViewModel, keyId);
+        clearSearchResults();
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Erro ao adicionar autorização: $e");
+      return false;
+    } finally {
+      _isAddingUser = false;
+      notifyListeners();
+    }
+  }
+
+  bool isUserAuthorized(int userId) {
+    return _authorizations.any((auth) => auth.userId == userId);
   }
 
   void searchUsers(AuthViewModel authViewModel, String query) {
