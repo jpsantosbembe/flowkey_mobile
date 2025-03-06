@@ -1,4 +1,4 @@
-package com.example.flowkey_mobile
+package com.joaobembe.flowkey_mobile
 
 import io.flutter.embedding.android.FlutterActivity
 

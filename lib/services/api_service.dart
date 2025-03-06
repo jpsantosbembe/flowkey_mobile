@@ -7,7 +7,7 @@ import '../models/loan_model.dart';
 class ApiService {
   final Dio _dio = Dio();
   
-  var apiUrl = 'sua url da api';
+  var apiUrl = 'https://flowkey.joaobembe.com';
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
     try {
